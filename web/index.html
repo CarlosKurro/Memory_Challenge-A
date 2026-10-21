@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#153c35">
+  <title>Memory — Chat và ghi nhớ dự án</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar" aria-label="Điều hướng cuộc trò chuyện">
+    <a class="brand" href="/" aria-label="Memory trang chủ"><span class="brand-mark">m<span>·</span></span><span>memory<span class="brand-dot">.</span></span></a>
+    <div class="project-label">KHÔNG GIAN DỰ ÁN</div>
+    <div class="project-switch"><span class="project-icon" aria-hidden="true">▣</span><select id="projectSelect" aria-label="Chọn dự án"></select><button class="icon-button" id="addProject" title="Tạo dự án" aria-label="Tạo dự án">+</button></div>
+    <button class="new-chat" id="newChat"><span aria-hidden="true">＋</span> Cuộc trò chuyện mới</button>
+    <div class="history-label">CUỘC TRÒ CHUYỆN</div>
+    <nav class="chat-list" id="chatList" aria-label="Danh sách cuộc trò chuyện"></nav>
+    <div class="sidebar-bottom">
+      <div class="memory-note"><span class="small-spark" aria-hidden="true">✦</span><div><strong>Cuộc trò chuyện mới.<br>Bộ nhớ vẫn ở đây.</strong><p>Quy ước đồng hành cùng dự án của bạn.</p></div></div>
+      <button class="settings-button" id="openSettings"><span class="settings-symbol" aria-hidden="true">⚙</span><span>Cài đặt AI</span><span class="tiny-label" id="sidebarMode">DEMO</span></button>
+      <div class="local-note"><span class="status-dot"></span> Dữ liệu lưu trên máy của bạn</div>
+    </div>
+  </aside>
+  <div class="mobile-shade" id="mobileShade" hidden></div>
+  <main class="workspace">
+    <header class="topbar">
+      <div class="topbar-left"><button class="icon-button menu-button" id="toggleSidebar" aria-label="Mở danh sách chat">☰</button><div class="breadcrumb"><span id="projectTitle">Challenge A</span><span class="slash">/</span><span class="breadcrumb-sub">Trợ lý dự án</span></div></div>
+      <div class="header-actions"><button class="mode-badge" id="modeBadge">Demo · không dùng LLM</button><button class="memory-toggle" id="toggleMemory"><span aria-hidden="true">▤</span> Bộ nhớ <span id="memoryCount">0</span></button></div>
+    </header>
+    <div class="chat-layout">
+      <section class="chat-section" aria-label="Nội dung trò chuyện">
+        <div class="messages-scroll" id="messagesScroll">
+          <div class="welcome" id="welcome">
+            <div class="welcome-symbol" aria-hidden="true">✳</div>
+            <div class="eyebrow">TRỢ LÝ CÓ BỘ NHỚ DỰ ÁN</div>
+            <h1>Trò chuyện tiếp nối.<br><span>Ý tưởng không thất lạc.</span></h1>
+            <p class="welcome-copy">Cứ trò chuyện tự nhiên. Mình ghi nhớ các quy ước bạn đã chốt<br class="desktop-break"> và dùng lại chúng trong những cuộc trò chuyện sau.</p>
+            <div class="suggestions">
+              <button class="suggestion" data-prompt="Dự án dùng TypeScript, PostgreSQL và JWT. Chúng ta chọn API REST /api/v1 với JSON snake_case."><span class="suggestion-icon">◈</span><strong>Chốt quy ước dự án</strong><span>“Dự án dùng TypeScript, PostgreSQL và JWT.”</span><span class="suggestion-arrow" aria-hidden="true">↗</span></button>
+              <button class="suggestion" data-prompt="Bạn đang nhớ những quy ước nào của dự án này?"><span class="suggestion-icon">▤</span><strong>Tiếp tục từ bộ nhớ</strong><span>“Bạn đang nhớ quy ước nào của dự án?”</span><span class="suggestion-arrow" aria-hidden="true">↗</span></button>
+              <button class="suggestion" data-prompt="Từ bây giờ chuyển authentication từ JWT sang session cookie."><span class="suggestion-icon">⇄</span><strong>Thay đổi một quyết định</strong><span>“Chuyển authentication sang session cookie.”</span><span class="suggestion-arrow" aria-hidden="true">↗</span></button>
+              <button class="suggestion" data-prompt="Hãy đề xuất kế hoạch triển khai endpoint hồ sơ theo quy ước hiện tại của dự án."><span class="suggestion-icon">⌘</span><strong>Cùng bắt tay vào làm</strong><span>“Lên kế hoạch cho endpoint hồ sơ.”</span><span class="suggestion-arrow" aria-hidden="true">↗</span></button>
+            </div>
+            <div class="welcome-footnote"><span class="status-dot"></span> Chat mới dùng lại quy ước · Quyết định cũ có lịch sử thay thế</div>
+          </div>
+          <div class="messages" id="messages" aria-live="polite" aria-relevant="additions"></div>
+        </div>
+        <div class="composer-area">
+          <div class="demo-banner" id="demoBanner"><span aria-hidden="true">◌</span><span><strong>Bạn đang ở chế độ demo.</strong> Kết nối AI để trò chuyện tự do.</span><button id="bannerSettings">Kết nối AI <span aria-hidden="true">↗</span></button></div>
+          <form class="composer" id="chatForm"><label class="sr-only" for="messageInput">Tin nhắn</label><textarea id="messageInput" rows="2" placeholder="Nhắn cho Memory…" maxlength="12000"></textarea><div class="composer-tools"><span class="composer-project"><span aria-hidden="true">◈</span><span id="composerProject">Challenge A</span></span><div class="send-group"><span class="key-hint">Enter để gửi</span><button class="send-button" type="submit" id="sendButton" aria-label="Gửi tin nhắn"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div></form>
+          <p class="composer-caption">Bộ nhớ được nạp lại theo dự án. <span>Shift + Enter để xuống dòng.</span></p>
+        </div>
+      </section>
+      <aside class="memory-panel" id="memoryPanel" aria-label="Bộ nhớ dự án">
+        <div class="memory-heading"><div><span class="eyebrow">LUÔN ĐỒNG HÀNH</span><h2>Bộ nhớ dự án<span class="heading-dot"></span></h2></div><button class="icon-button close-memory" id="closeMemory" aria-label="Đóng bảng bộ nhớ">×</button></div>
+        <p class="panel-description">Những quyết định đã chốt, được nhớ qua mọi cuộc trò chuyện của dự án.</p>
+        <div class="memory-tabs" role="tablist" aria-label="Chế độ xem bộ nhớ"><button id="activeTab" role="tab" aria-selected="true">Hiện hành <span id="activeCount">0</span></button><button id="historyTab" role="tab" aria-selected="false">Lịch sử</button></div>
+        <div class="memory-items" id="memoryItems"></div>
+        <div class="memory-panel-bottom"><button class="trace-button" id="openTrace"><span aria-hidden="true">⌕</span><span><strong>Ngữ cảnh đã nạp</strong><small>Kiểm chứng memory của lượt chat</small></span><span aria-hidden="true">↗</span></button><button class="export-button" id="exportEvidence"><span aria-hidden="true">↓</span> Xuất bằng chứng Challenge A</button><div class="challenge-label">CHALLENGE A <span>·</span> PERSISTENT MEMORY</div></div>
+      </aside>
+    </div>
+  </main>
+  <dialog id="settingsDialog" class="modal"><form id="settingsForm"><div class="modal-header"><div><div class="eyebrow">TRẢI NGHIỆM TRÒ CHUYỆN</div><h2>Kết nối trợ lý AI</h2></div><button type="button" class="icon-button" data-close="settingsDialog" aria-label="Đóng cài đặt">×</button></div><p class="modal-description">Chọn demo để thử bộ nhớ, hoặc dùng OpenAI để trò chuyện tự do và viết code.</p><label for="providerInput">Chế độ</label><select id="providerInput"><option value="demo">Demo — nhận diện một số quy ước theo quy tắc</option><option value="openai">AI thật — OpenAI Responses API</option></select><div id="apiFields"><label for="modelInput">Model</label><input id="modelInput" placeholder="gpt-5-mini" autocomplete="off"><label for="apiKeyInput">OpenAI API key</label><input type="password" id="apiKeyInput" placeholder="sk-…" autocomplete="off" spellcheck="false"><p class="field-note">Key chỉ giữ trong RAM của server trên máy bạn; cần nhập lại nếu khởi động lại server. Không lưu trong trình duyệt hoặc database.</p><p class="field-note">Cần API key có hạn mức sử dụng. Các lượt chat AI gọi API theo tài khoản của bạn.</p></div><div class="form-error" id="settingsError" role="alert" hidden></div><div class="modal-footer"><button type="button" class="secondary-button" data-close="settingsDialog">Để sau</button><button class="primary-button" type="submit" id="saveSettings">Lưu cấu hình</button></div></form></dialog>
+  <dialog id="projectDialog" class="modal small-modal"><form id="projectForm"><div class="modal-header"><h2>Dự án mới</h2><button type="button" class="icon-button" data-close="projectDialog" aria-label="Đóng">×</button></div><p class="modal-description">Mỗi dự án có bộ nhớ và lịch sử trò chuyện riêng.</p><label for="projectInput">Tên dự án</label><input id="projectInput" maxlength="80" required placeholder="Ví dụ: Website bán sách"><div class="modal-footer"><button type="button" class="secondary-button" data-close="projectDialog">Hủy</button><button class="primary-button" type="submit">Tạo dự án</button></div></form></dialog>
+  <dialog id="traceDialog" class="modal trace-modal"><div class="modal-header"><div><div class="eyebrow">BẰNG CHỨNG CHALLENGE A</div><h2>Ngữ cảnh đã nạp</h2></div><button class="icon-button" data-close="traceDialog" aria-label="Đóng ngữ cảnh">×</button></div><p class="modal-description" id="traceDescription"></p><pre id="traceContent"></pre></dialog>
+  <div class="toast" id="toast" role="status" hidden></div>
+</body>
+</html>
